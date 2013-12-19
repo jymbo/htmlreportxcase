@@ -19,18 +19,17 @@ set postlist {}
 foreach function $function_list {
 	set function_name  [$function attr NAME]
 	 if { [$function attr TYPE] =="Function"} {
-
-lappend postlist [list "$function" "$function_name"]     
+          lappend postlist [list "$function" "$function_name"]     
+    }
 }
-} 
+ 
 #Sort the list by the function name
 set sorted [lsort -ascii -index 1  $postlist]
 
 #Get final list of just function name
 set finallist {}
-	foreach var $sorted {
+foreach var $sorted {
 	lappend finallist [lindex $var 0] 	
-
 }
 
 #Truncate existing file(This global variable is set in HTMLReport.tcl)

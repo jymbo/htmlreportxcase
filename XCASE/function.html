@@ -1,0 +1,626 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="theme.css">
+</head>
+<table border="1">
+<tr>
+<th colspan="7" id=ConvertCurrency><div id="table-bar"><strong>ConvertCurrency</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">CREATE  FUNCTION [dbo].[ConvertCurrency]  ( @fromAmount [money],@toCultureName [nvarchar](10),@onDate [datetime] )  RETURNS  [dbo].[Currency] WITH EXECUTE AS CALLER AS EXTERNAL NAME [ConversionFunction].[Microsoft.Samples.SqlServer.CurrencyConverter].[ConvertCurrency]</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=GetContactTypeNames><div id="table-bar"><strong>GetContactTypeNames</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">CREATE  FUNCTION [dbo].[GetContactTypeNames] @names [dbo].[ContactTypeNames] WITH EXECUTE AS CALLER AS EXTERNAL NAME [ArrayParameter].[Microsoft.Samples.SqlServer.ContactTypeNames].[GetContactTypeNames]</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetAccountingEndDate><div id="table-bar"><strong>ufnGetAccountingEndDate</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetAccountingEndDate]()
+RETURNS [datetime] 
+AS 
+BEGIN
+    RETURN DATEADD(millisecond, -2, CONVERT(datetime, '2004-07-01', 101));
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetAccountingStartDate><div id="table-bar"><strong>ufnGetAccountingStartDate</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetAccountingStartDate]()
+RETURNS [datetime] 
+AS 
+BEGIN
+    RETURN '2003-07-01';
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetContactInformation><div id="table-bar"><strong>ufnGetContactInformation</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetContactInformation](@ContactID int)
+RETURNS @retContactInformation TABLE 
+(
+    -- Columns returned by the function
+    [ContactID] int PRIMARY KEY NOT NULL, 
+    [FirstName] [nvarchar](50) NULL, 
+    [LastName] [nvarchar](50) NULL, 
+    [JobTitle] [nvarchar](50) NULL, 
+    [ContactType] [nvarchar](50) NULL
+)
+AS 
+-- Returns the first name, last name, job title and contact type for the specified contact.
+BEGIN
+    DECLARE 
+        @FirstName [nvarchar](50), 
+        @LastName [nvarchar](50), 
+        @JobTitle [nvarchar](50), 
+        @ContactType [nvarchar](50);
+
+
+    -- Get common contact information
+    SELECT 
+        @ContactID = ContactID, 
+        @FirstName = FirstName, 
+        @LastName = LastName
+    FROM [Person].[Contact] 
+    WHERE [ContactID] = @ContactID;
+
+    SET @JobTitle = 
+        CASE 
+            -- Check for employee
+            WHEN EXISTS(SELECT * FROM [HumanResources].[Employee] e 
+                WHERE e.[ContactID] = @ContactID) 
+                THEN (SELECT [Title] 
+                    FROM [HumanResources].[Employee] 
+                    WHERE [ContactID] = @ContactID)
+
+            -- Check for vendor
+            WHEN EXISTS(SELECT * FROM [Purchasing].[VendorContact] vc 
+                    INNER JOIN [Person].[ContactType] ct 
+                    ON vc.[ContactTypeID] = ct.[ContactTypeID] 
+                WHERE vc.[ContactID] = @ContactID) 
+                THEN (SELECT ct.[Name] 
+                    FROM [Purchasing].[VendorContact] vc 
+                        INNER JOIN [Person].[ContactType] ct 
+                        ON vc.[ContactTypeID] = ct.[ContactTypeID] 
+                    WHERE vc.[ContactID] = @ContactID)
+
+            -- Check for store
+            WHEN EXISTS(SELECT * FROM [Sales].[StoreContact] sc 
+                    INNER JOIN [Person].[ContactType] ct 
+                    ON sc.[ContactTypeID] = ct.[ContactTypeID] 
+                WHERE sc.[ContactID] = @ContactID) 
+                THEN (SELECT ct.[Name] 
+                    FROM [Sales].[StoreContact] sc 
+                        INNER JOIN [Person].[ContactType] ct 
+                        ON sc.[ContactTypeID] = ct.[ContactTypeID] 
+                    WHERE [ContactID] = @ContactID)
+
+            ELSE NULL 
+        END;
+
+    SET @ContactType = 
+        CASE 
+            -- Check for employee
+            WHEN EXISTS(SELECT * FROM [HumanResources].[Employee] e 
+                WHERE e.[ContactID] = @ContactID) 
+                THEN 'Employee'
+
+            -- Check for vendor
+            WHEN EXISTS(SELECT * FROM [Purchasing].[VendorContact] vc 
+                    INNER JOIN [Person].[ContactType] ct 
+                    ON vc.[ContactTypeID] = ct.[ContactTypeID] 
+                WHERE vc.[ContactID] = @ContactID) 
+                THEN 'Vendor Contact'
+
+            -- Check for store
+            WHEN EXISTS(SELECT * FROM [Sales].[StoreContact] sc 
+                    INNER JOIN [Person].[ContactType] ct 
+                    ON sc.[ContactTypeID] = ct.[ContactTypeID] 
+                WHERE sc.[ContactID] = @ContactID) 
+                THEN 'Store Contact'
+
+            -- Check for individual consumer
+            WHEN EXISTS(SELECT * FROM [Sales].[Individual] i 
+                WHERE i.[ContactID] = @ContactID) 
+                THEN 'Consumer'
+        END;
+
+    -- Return the information to the caller
+    IF @ContactID IS NOT NULL 
+    BEGIN
+        INSERT @retContactInformation
+        SELECT @ContactID, @FirstName, @LastName, @JobTitle, @ContactType;
+    END;
+
+    RETURN;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetDocumentStatusText><div id="table-bar"><strong>ufnGetDocumentStatusText</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetDocumentStatusText](@Status [tinyint])
+RETURNS [nvarchar](15) 
+AS 
+-- Returns the sales order status text representation for the status value.
+BEGIN
+    DECLARE @ret [nvarchar](15);
+
+    SET @ret = 
+        CASE @Status
+            WHEN 1 THEN 'Pending approval'
+            WHEN 2 THEN 'Approved'
+            WHEN 3 THEN 'Obsolete'
+            ELSE '** Invalid **'
+        END;
+    
+    RETURN @ret
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetProductDealerPrice><div id="table-bar"><strong>ufnGetProductDealerPrice</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetProductDealerPrice](@ProductID [int], @OrderDate [datetime])
+RETURNS [money] 
+AS 
+-- Returns the dealer price for the product on a specific date.
+BEGIN
+    DECLARE @DealerPrice money;
+    DECLARE @DealerDiscount money;
+
+    SET @DealerDiscount = 0.60  -- 60% of list price
+
+    SELECT @DealerPrice = plph.[ListPrice] * @DealerDiscount 
+    FROM [Production].[Product] p 
+        INNER JOIN [Production].[ProductListPriceHistory] plph 
+        ON p.[ProductID] = plph.[ProductID] 
+            AND p.[ProductID] = @ProductID 
+            AND @OrderDate BETWEEN plph.[StartDate] AND COALESCE(plph.[EndDate], '12-31-9999'); -- Make sure we get all the prices!
+
+    RETURN @DealerPrice;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetProductListPrice><div id="table-bar"><strong>ufnGetProductListPrice</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetProductListPrice](@ProductID [int], @OrderDate [datetime])
+RETURNS [money] 
+AS 
+BEGIN
+    DECLARE @ListPrice money;
+
+    SELECT @ListPrice = plph.[ListPrice] 
+    FROM [Production].[Product] p 
+        INNER JOIN [Production].[ProductListPriceHistory] plph 
+        ON p.[ProductID] = plph.[ProductID] 
+            AND p.[ProductID] = @ProductID 
+            AND @OrderDate BETWEEN plph.[StartDate] AND COALESCE(plph.[EndDate], '12-31-9999'); -- Make sure we get all the prices!
+
+    RETURN @ListPrice;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetProductStandardCost><div id="table-bar"><strong>ufnGetProductStandardCost</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetProductStandardCost](@ProductID [int], @OrderDate [datetime])
+RETURNS [money] 
+AS 
+-- Returns the standard cost for the product on a specific date.
+BEGIN
+    DECLARE @StandardCost money;
+
+    SELECT @StandardCost = pch.[StandardCost] 
+    FROM [Production].[Product] p 
+        INNER JOIN [Production].[ProductCostHistory] pch 
+        ON p.[ProductID] = pch.[ProductID] 
+            AND p.[ProductID] = @ProductID 
+            AND @OrderDate BETWEEN pch.[StartDate] AND COALESCE(pch.[EndDate], '12-31-9999'); -- Make sure we get all the prices!
+
+    RETURN @StandardCost;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetPurchaseOrderStatusText><div id="table-bar"><strong>ufnGetPurchaseOrderStatusText</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetPurchaseOrderStatusText](@Status [tinyint])
+RETURNS [nvarchar](15) 
+AS 
+-- Returns the sales order status text representation for the status value.
+BEGIN
+    DECLARE @ret [nvarchar](15);
+
+    SET @ret = 
+        CASE @Status
+            WHEN 1 THEN 'Pending'
+            WHEN 2 THEN 'Approved'
+            WHEN 3 THEN 'Rejected'
+            WHEN 4 THEN 'Complete'
+            ELSE '** Invalid **'
+        END;
+    
+    RETURN @ret
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetSalesOrderStatusText><div id="table-bar"><strong>ufnGetSalesOrderStatusText</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" >descriptions herer</td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7">sting commentst</td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetSalesOrderStatusText](@Status [tinyint])
+RETURNS [nvarchar](15) 
+AS 
+-- Returns the sales order status text representation for the status value.
+BEGIN
+    DECLARE @ret [nvarchar](15);
+
+    SET @ret = 
+        CASE @Status
+            WHEN 1 THEN 'In process'
+            WHEN 2 THEN 'Approved'
+            WHEN 3 THEN 'Backordered'
+            WHEN 4 THEN 'Rejected'
+            WHEN 5 THEN 'Shipped'
+            WHEN 6 THEN 'Cancelled'
+            ELSE '** Invalid **'
+        END;
+    
+    RETURN @ret
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnGetStock><div id="table-bar"><strong>ufnGetStock</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnGetStock](@ProductID [int])
+RETURNS [int] 
+AS 
+-- Returns the stock level for the product. This function is used internally only
+BEGIN
+    DECLARE @ret int;
+    
+    SELECT @ret = SUM(p.[Quantity]) 
+    FROM [Production].[ProductInventory] p 
+    WHERE p.[ProductID] = @ProductID 
+        AND p.[LocationID] = '6'; -- Only look at inventory in the misc storage
+    
+    IF (@ret IS NULL) 
+        SET @ret = 0
+    
+    RETURN @ret
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=ufnLeadingZeros><div id="table-bar"><strong>ufnLeadingZeros</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th  colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7" ></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td colspan="7">
+CREATE FUNCTION [dbo].[ufnLeadingZeros](
+    @Value int
+) 
+RETURNS varchar(8) 
+WITH SCHEMABINDING 
+AS 
+BEGIN
+    DECLARE @ReturnValue varchar(8);
+
+    SET @ReturnValue = CONVERT(varchar(8), @Value);
+    SET @ReturnValue = REPLICATE('0', 8 - DATALENGTH(@ReturnValue)) + @ReturnValue;
+
+    RETURN (@ReturnValue);
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+</html>

@@ -1,0 +1,836 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="theme.css">
+</head>
+<table border="1">
+<tr>
+<th colspan="7" id=CleanupUnusedAssemblies><div id="table-bar"><strong>CleanupUnusedAssemblies</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7">descriptions</td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7">testing comments</td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">CREATE  PROCEDURE [dbo].[CleanupUnusedAssemblies] @visible_assemblies [bit] WITH EXECUTE AS CALLER AS EXTERNAL NAME [AssemblyCleanupUtils].[Microsoft.Samples.SqlServer.AssemblyCleanup].[CleanupUnusedAssemblies]</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=GetPhotoFromDB><div id="table-bar"><strong>GetPhotoFromDB</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">CREATE  PROCEDURE [dbo].[GetPhotoFromDB] @ProductPhotoID [int],@CurrentDirectory [nvarchar](1024),@FileName [nvarchar](1024) WITH EXECUTE AS CALLER AS EXTERNAL NAME [HandlingLOBUsingCLR].[Microsoft.Samples.SqlServer.LargeObjectBinary].[GetPhotoFromDB]</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=PutPhotoIntoDB><div id="table-bar"><strong>PutPhotoIntoDB</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">CREATE  PROCEDURE [dbo].[PutPhotoIntoDB] @ProductPhotoID [int],@CurrentDirectory [nvarchar](1024),@FileName [nvarchar](1024) WITH EXECUTE AS CALLER AS EXTERNAL NAME [HandlingLOBUsingCLR].[Microsoft.Samples.SqlServer.LargeObjectBinary].[PutPhotoIntoDB]</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspGetBillOfMaterials><div id="table-bar"><strong>uspGetBillOfMaterials</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [dbo].[uspGetBillOfMaterials]
+    @StartProductID [int],
+    @CheckDate [datetime]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Use recursive query to generate a multi-level Bill of Material (i.e. all level 1 
+    -- components of a level 0 assembly, all level 2 components of a level 1 assembly)
+    -- The CheckDate eliminates any components that are no longer used in the product on this date.
+    WITH [BOM_cte]([ProductAssemblyID], [ComponentID], [ComponentDesc], [PerAssemblyQty], [StandardCost], [ListPrice], [BOMLevel], [RecursionLevel]) -- CTE name and columns
+    AS (
+        SELECT b.[ProductAssemblyID], b.[ComponentID], p.[Name], b.[PerAssemblyQty], p.[StandardCost], p.[ListPrice], b.[BOMLevel], 0 -- Get the initial list of components for the bike assembly
+        FROM [Production].[BillOfMaterials] b
+            INNER JOIN [Production].[Product] p 
+            ON b.[ComponentID] = p.[ProductID] 
+        WHERE b.[ProductAssemblyID] = @StartProductID 
+            AND @CheckDate >= b.[StartDate] 
+            AND @CheckDate <= ISNULL(b.[EndDate], @CheckDate)
+        UNION ALL
+        SELECT b.[ProductAssemblyID], b.[ComponentID], p.[Name], b.[PerAssemblyQty], p.[StandardCost], p.[ListPrice], b.[BOMLevel], [RecursionLevel] + 1 -- Join recursive member to anchor
+        FROM [BOM_cte] cte
+            INNER JOIN [Production].[BillOfMaterials] b 
+            ON b.[ProductAssemblyID] = cte.[ComponentID]
+            INNER JOIN [Production].[Product] p 
+            ON b.[ComponentID] = p.[ProductID] 
+        WHERE @CheckDate >= b.[StartDate] 
+            AND @CheckDate <= ISNULL(b.[EndDate], @CheckDate)
+        )
+    -- Outer select from the CTE
+    SELECT b.[ProductAssemblyID], b.[ComponentID], b.[ComponentDesc], SUM(b.[PerAssemblyQty]) AS [TotalQuantity] , b.[StandardCost], b.[ListPrice], b.[BOMLevel], b.[RecursionLevel]
+    FROM [BOM_cte] b
+    GROUP BY b.[ComponentID], b.[ComponentDesc], b.[ProductAssemblyID], b.[BOMLevel], b.[RecursionLevel], b.[StandardCost], b.[ListPrice]
+    ORDER BY b.[BOMLevel], b.[ProductAssemblyID], b.[ComponentID]
+    OPTION (MAXRECURSION 25) 
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspGetEmployeeManagers><div id="table-bar"><strong>uspGetEmployeeManagers</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [dbo].[uspGetEmployeeManagers]
+    @EmployeeID [int]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Use recursive query to list out all Employees required for a particular Manager
+    WITH [EMP_cte]([EmployeeID], [ManagerID], [FirstName], [LastName], [Title], [RecursionLevel]) -- CTE name and columns
+    AS (
+        SELECT e.[EmployeeID], e.[ManagerID], c.[FirstName], c.[LastName], e.[Title], 0 -- Get the initial Employee
+        FROM [HumanResources].[Employee] e 
+            INNER JOIN [Person].[Contact] c 
+            ON e.[ContactID] = c.[ContactID]
+        WHERE e.[EmployeeID] = @EmployeeID
+        UNION ALL
+        SELECT e.[EmployeeID], e.[ManagerID], c.[FirstName], c.[LastName], e.[Title], [RecursionLevel] + 1 -- Join recursive member to anchor
+        FROM [HumanResources].[Employee] e 
+            INNER JOIN [EMP_cte]
+            ON e.[EmployeeID] = [EMP_cte].[ManagerID]
+            INNER JOIN [Person].[Contact] c 
+            ON e.[ContactID] = c.[ContactID]
+    )
+    -- Join back to Employee to return the manager name 
+    SELECT [EMP_cte].[RecursionLevel], [EMP_cte].[EmployeeID], [EMP_cte].[FirstName], [EMP_cte].[LastName], 
+        [EMP_cte].[ManagerID], c.[FirstName] AS 'ManagerFirstName', c.[LastName] AS 'ManagerLastName'  -- Outer select from the CTE
+    FROM [EMP_cte] 
+        INNER JOIN [HumanResources].[Employee] e 
+        ON [EMP_cte].[ManagerID] = e.[EmployeeID]
+        INNER JOIN [Person].[Contact] c 
+        ON e.[ContactID] = c.[ContactID]
+    ORDER BY [RecursionLevel], [ManagerID], [EmployeeID]
+    OPTION (MAXRECURSION 25) 
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspGetManagerEmployees><div id="table-bar"><strong>uspGetManagerEmployees</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [dbo].[uspGetManagerEmployees]
+    @ManagerID [int]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Use recursive query to list out all Employees required for a particular Manager
+    WITH [EMP_cte]([EmployeeID], [ManagerID], [FirstName], [LastName], [RecursionLevel]) -- CTE name and columns
+    AS (
+        SELECT e.[EmployeeID], e.[ManagerID], c.[FirstName], c.[LastName], 0 -- Get the initial list of Employees for Manager n
+        FROM [HumanResources].[Employee] e 
+            INNER JOIN [Person].[Contact] c 
+            ON e.[ContactID] = c.[ContactID]
+        WHERE [ManagerID] = @ManagerID
+        UNION ALL
+        SELECT e.[EmployeeID], e.[ManagerID], c.[FirstName], c.[LastName], [RecursionLevel] + 1 -- Join recursive member to anchor
+        FROM [HumanResources].[Employee] e 
+            INNER JOIN [EMP_cte]
+            ON e.[ManagerID] = [EMP_cte].[EmployeeID]
+            INNER JOIN [Person].[Contact] c 
+            ON e.[ContactID] = c.[ContactID]
+        )
+    -- Join back to Employee to return the manager name 
+    SELECT [EMP_cte].[RecursionLevel], [EMP_cte].[ManagerID], c.[FirstName] AS 'ManagerFirstName', c.[LastName] AS 'ManagerLastName',
+        [EMP_cte].[EmployeeID], [EMP_cte].[FirstName], [EMP_cte].[LastName] -- Outer select from the CTE
+    FROM [EMP_cte] 
+        INNER JOIN [HumanResources].[Employee] e 
+        ON [EMP_cte].[ManagerID] = e.[EmployeeID]
+        INNER JOIN [Person].[Contact] c 
+        ON e.[ContactID] = c.[ContactID]
+    ORDER BY [RecursionLevel], [ManagerID], [EmployeeID]
+    OPTION (MAXRECURSION 25) 
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspGetWhereUsedProductID><div id="table-bar"><strong>uspGetWhereUsedProductID</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [dbo].[uspGetWhereUsedProductID]
+    @StartProductID [int],
+    @CheckDate [datetime]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    --Use recursive query to generate a multi-level Bill of Material (i.e. all level 1 components of a level 0 assembly, all level 2 components of a level 1 assembly)
+    WITH [BOM_cte]([ProductAssemblyID], [ComponentID], [ComponentDesc], [PerAssemblyQty], [StandardCost], [ListPrice], [BOMLevel], [RecursionLevel]) -- CTE name and columns
+    AS (
+        SELECT b.[ProductAssemblyID], b.[ComponentID], p.[Name], b.[PerAssemblyQty], p.[StandardCost], p.[ListPrice], b.[BOMLevel], 0 -- Get the initial list of components for the bike assembly
+        FROM [Production].[BillOfMaterials] b
+            INNER JOIN [Production].[Product] p 
+            ON b.[ProductAssemblyID] = p.[ProductID] 
+        WHERE b.[ComponentID] = @StartProductID 
+            AND @CheckDate >= b.[StartDate] 
+            AND @CheckDate <= ISNULL(b.[EndDate], @CheckDate)
+        UNION ALL
+        SELECT b.[ProductAssemblyID], b.[ComponentID], p.[Name], b.[PerAssemblyQty], p.[StandardCost], p.[ListPrice], b.[BOMLevel], [RecursionLevel] + 1 -- Join recursive member to anchor
+        FROM [BOM_cte] cte
+            INNER JOIN [Production].[BillOfMaterials] b 
+            ON cte.[ProductAssemblyID] = b.[ComponentID]
+            INNER JOIN [Production].[Product] p 
+            ON b.[ProductAssemblyID] = p.[ProductID] 
+        WHERE @CheckDate >= b.[StartDate] 
+            AND @CheckDate <= ISNULL(b.[EndDate], @CheckDate)
+        )
+    -- Outer select from the CTE
+    SELECT b.[ProductAssemblyID], b.[ComponentID], b.[ComponentDesc], SUM(b.[PerAssemblyQty]) AS [TotalQuantity] , b.[StandardCost], b.[ListPrice], b.[BOMLevel], b.[RecursionLevel]
+    FROM [BOM_cte] b
+    GROUP BY b.[ComponentID], b.[ComponentDesc], b.[ProductAssemblyID], b.[BOMLevel], b.[RecursionLevel], b.[StandardCost], b.[ListPrice]
+    ORDER BY b.[BOMLevel], b.[ProductAssemblyID], b.[ComponentID]
+    OPTION (MAXRECURSION 25) 
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspLogError><div id="table-bar"><strong>uspLogError</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+-- uspLogError logs error information in the ErrorLog table about the 
+-- error that caused execution to jump to the CATCH block of a 
+-- TRY...CATCH construct. This should be executed from within the scope 
+-- of a CATCH block otherwise it will return without inserting error 
+-- information. 
+CREATE PROCEDURE [dbo].[uspLogError] 
+    @ErrorLogID [int] = 0 OUTPUT -- contains the ErrorLogID of the row inserted
+AS                               -- by uspLogError in the ErrorLog table
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Output parameter value of 0 indicates that error 
+    -- information was not logged
+    SET @ErrorLogID = 0;
+
+    BEGIN TRY
+        -- Return if there is no error information to log
+        IF ERROR_NUMBER() IS NULL
+            RETURN;
+
+        -- Return if inside an uncommittable transaction.
+        -- Data insertion/modification is not allowed when 
+        -- a transaction is in an uncommittable state.
+        IF XACT_STATE() = -1
+        BEGIN
+            PRINT 'Cannot log error since the current transaction is in an uncommittable state. ' 
+                + 'Rollback the transaction before executing uspLogError in order to successfully log error information.';
+            RETURN;
+        END
+
+        INSERT [dbo].[ErrorLog] 
+            (
+            [UserName], 
+            [ErrorNumber], 
+            [ErrorSeverity], 
+            [ErrorState], 
+            [ErrorProcedure], 
+            [ErrorLine], 
+            [ErrorMessage]
+            ) 
+        VALUES 
+            (
+            CONVERT(sysname, CURRENT_USER), 
+            ERROR_NUMBER(),
+            ERROR_SEVERITY(),
+            ERROR_STATE(),
+            ERROR_PROCEDURE(),
+            ERROR_LINE(),
+            ERROR_MESSAGE()
+            );
+
+        -- Pass back the ErrorLogID of the row inserted
+        SET @ErrorLogID = @@IDENTITY;
+    END TRY
+    BEGIN CATCH
+        PRINT 'An error occurred in stored procedure uspLogError: ';
+        EXECUTE [dbo].[uspPrintError];
+        RETURN -1;
+    END CATCH
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspPrintError><div id="table-bar"><strong>uspPrintError</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+-- uspPrintError prints error information about the error that caused 
+-- execution to jump to the CATCH block of a TRY...CATCH construct. 
+-- Should be executed from within the scope of a CATCH block otherwise 
+-- it will return without printing any error information.
+CREATE PROCEDURE [dbo].[uspPrintError] 
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Print error information. 
+    PRINT 'Error ' + CONVERT(varchar(50), ERROR_NUMBER()) +
+          ', Severity ' + CONVERT(varchar(5), ERROR_SEVERITY()) +
+          ', State ' + CONVERT(varchar(5), ERROR_STATE()) + 
+          ', Procedure ' + ISNULL(ERROR_PROCEDURE(), '-') + 
+          ', Line ' + CONVERT(varchar(5), ERROR_LINE());
+    PRINT ERROR_MESSAGE();
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspUpdateEmployeeHireInfo><div id="table-bar"><strong>uspUpdateEmployeeHireInfo</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">HumanResources</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [HumanResources].[uspUpdateEmployeeHireInfo]
+    @EmployeeID [int], 
+    @Title [nvarchar](50), 
+    @HireDate [datetime], 
+    @RateChangeDate [datetime], 
+    @Rate [money], 
+    @PayFrequency [tinyint], 
+    @CurrentFlag [dbo].[Flag] 
+WITH EXECUTE AS CALLER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        UPDATE [HumanResources].[Employee] 
+        SET [Title] = @Title 
+            ,[HireDate] = @HireDate 
+            ,[CurrentFlag] = @CurrentFlag 
+        WHERE [EmployeeID] = @EmployeeID;
+
+        INSERT INTO [HumanResources].[EmployeePayHistory] 
+            ([EmployeeID]
+            ,[RateChangeDate]
+            ,[Rate]
+            ,[PayFrequency]) 
+        VALUES (@EmployeeID, @RateChangeDate, @Rate, @PayFrequency);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Rollback any active or uncommittable transactions before
+        -- inserting information in the ErrorLog
+        IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END
+
+        EXECUTE [dbo].[uspLogError];
+    END CATCH;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspUpdateEmployeeLogin><div id="table-bar"><strong>uspUpdateEmployeeLogin</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">HumanResources</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [HumanResources].[uspUpdateEmployeeLogin]
+    @EmployeeID [int], 
+    @ManagerID [int],
+    @LoginID [nvarchar](256),
+    @Title [nvarchar](50),
+    @HireDate [datetime],
+    @CurrentFlag [dbo].[Flag]
+WITH EXECUTE AS CALLER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        UPDATE [HumanResources].[Employee] 
+        SET [ManagerID] = @ManagerID 
+            ,[LoginID] = @LoginID 
+            ,[Title] = @Title 
+            ,[HireDate] = @HireDate 
+            ,[CurrentFlag] = @CurrentFlag 
+        WHERE [EmployeeID] = @EmployeeID;
+    END TRY
+    BEGIN CATCH
+        EXECUTE [dbo].[uspLogError];
+    END CATCH;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=uspUpdateEmployeePersonalInfo><div id="table-bar"><strong>uspUpdateEmployeePersonalInfo</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">HumanResources</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE [HumanResources].[uspUpdateEmployeePersonalInfo]
+    @EmployeeID [int], 
+    @NationalIDNumber [nvarchar](15), 
+    @BirthDate [datetime], 
+    @MaritalStatus [nchar](1), 
+    @Gender [nchar](1)
+WITH EXECUTE AS CALLER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        UPDATE [HumanResources].[Employee] 
+        SET [NationalIDNumber] = @NationalIDNumber 
+            ,[BirthDate] = @BirthDate 
+            ,[MaritalStatus] = @MaritalStatus 
+            ,[Gender] = @Gender 
+        WHERE [EmployeeID] = @EmployeeID;
+    END TRY
+    BEGIN CATCH
+        EXECUTE [dbo].[uspLogError];
+    END CATCH;
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=usp_CreateContact><div id="table-bar"><strong>usp_CreateContact</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">CREATE  PROCEDURE [dbo].[usp_CreateContact] @ContactData nvarchar(max),@ContactID [int] OUTPUT,@CustomerID [int] OUTPUT WITH EXECUTE AS CALLER AS EXTERNAL NAME [Contact].[Microsoft.Samples.SqlServer.ContactUtils].[CreateContact]</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=usp_EnsureContactTypeNames><div id="table-bar"><strong>usp_EnsureContactTypeNames</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+
+CREATE PROCEDURE usp_EnsureContactTypeNames
+(
+	@names dbo.ContactTypeNames
+)
+AS
+SET NOCOUNT ON;
+
+INSERT Person.ContactType ([Name])
+SELECT [Name] FROM GetContactTypeNames(@names) AS PotentialNames
+WHERE [Name] NOT IN (SELECT [Name] FROM Person.ContactType); 
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=usp_LookupConversionRate><div id="table-bar"><strong>usp_LookupConversionRate</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+CREATE PROCEDURE usp_LookupConversionRate
+(
+    @OnDate datetime,
+    @ToCurrencyCode nchar(3),
+    @Result decimal(10,4) OUTPUT
+)
+AS
+BEGIN
+    --It is not permitted to perform certain side-effects in functions, and
+    --SET NOCOUNT is one of them.  Since this sproc is called from 
+    --the ConvertCurrency CLR UDF, we must not do that side-effect or
+    --there will be an error at runtime.
+    --SET NOCOUNT ON;
+
+    SELECT @Result = (SELECT TOP 1 AverageRate FROM Sales.CurrencyRate 
+    WHERE CurrencyRateDate <= @OnDate AND FromCurrencyCode = N'USD' 
+    AND ToCurrencyCode = @ToCurrencyCode 
+    ORDER BY CurrencyRateDate DESC);
+
+    IF (@Result IS NULL)
+        SELECT @Result = (SELECT TOP 1 AverageRate FROM Sales.CurrencyRate 
+        WHERE CurrencyRateDate > @OnDate AND FromCurrencyCode = N'USD' 
+        AND ToCurrencyCode = @ToCurrencyCode
+        ORDER BY CurrencyRateDate ASC);
+END;
+</td>
+</tr>
+</table>
+&nbsp;
+<table border="1">
+<tr>
+<th colspan="7" id=usp_UpdateImage><div id="table-bar"><strong>usp_UpdateImage</strong></div></th>
+</tr>
+<tr>
+<th colspan="1">Owner</th>
+<td colspan="6">dbo</td>
+</tr>
+<tr>
+<th colspan="7">Description</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Comments</th>
+</tr>
+<tr>
+<td colspan="7"></td>
+</tr>
+<tr>
+<th colspan="7">Code</th>
+</tr>
+<tr>
+<td  colspan="7">
+
+-- Add a helper T-SQL method which does the actual work of updating the row
+
+CREATE PROCEDURE [dbo].[usp_UpdateImage]
+/* **********************************************************************************
+   Date:    April 22, 2003
+   Purpose: Change a thumbnail picture stored in the ProductPhoto table.
+   ********************************************************************************** */
+    @ProductPhotoID int
+    ,@ThumbNailPhoto AS VARBINARY(max)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+	BEGIN TRY
+    UPDATE Production.ProductPhoto 
+        SET ThumbNailPhoto = @ThumbNailPhoto
+        WHERE ProductPhotoID = @ProductPhotoID;
+    IF(@@ROWCOUNT < 1)
+        RAISERROR ('Update failed.', 16, 1);
+	END TRY
+	BEGIN CATCH
+        SELECT 
+			ERROR_NUMBER() AS ErrorNumber,
+			ERROR_SEVERITY() AS ErrorSeverity,
+			ERROR_STATE() as ErrorState,
+			ERROR_PROCEDURE() as ErrorProcedure,
+			ERROR_LINE() as ErrorLine,
+			ERROR_MESSAGE() as ErrorMessage;
+        RAISERROR ('Update failed.', 16, 1);
+	END CATCH;
+END  -- END of sp_InsertDocument
+</td>
+</tr>
+</table>
+&nbsp;
+</html>

@@ -1,0 +1,46 @@
+
+td, tr { 
+        padding: 0px; 
+	word-wrap:break-word;
+	font-size:14;
+           } 
+table { 
+	border-collapse: collapse; 
+	border-spacing: 0;
+	background-color:white; 
+	font-family:Tahoma;
+	table-layout:fixed; 	
+	width:1185;
+      } 
+
+
+#title-bar {
+	text-align:left; color:white; 
+	background-image:url('Support/GIF/sub_th.png');
+	background-repeat:repeat-x;
+       } 
+
+#table-bar 
+	{
+	text-align:left; 
+	color:white; 
+	background-image:url('Support/GIF/th_bk.png'); 
+	background-repeat:repeat-x;
+	} 
+
+th {
+	text-align:left; 
+	background-color:#99CCFF; 
+	background-image:url('Support/GIF/td_bk.png'); 
+	background-repeat:repeat-x;
+	padding: 0px;
+	font-size:14;
+   } 
+
+a {
+	color:black;
+	visited:black;
+	hover:black; 
+	active:black;
+  }
+ 

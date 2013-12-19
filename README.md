@@ -14,7 +14,7 @@ HTML Report Export for the XCASE Modeling Tool
   
 **Installing**
 
-1. Pull down the code to a directory on your local machine. You will need to open up HTMLReport.tcl and edit the first line of code to change the directory to whatever directory you dumped the files to: 
+1. Pull down the source files to a directory on your local machine. You will need to open up HTMLReport.tcl and edit the first line of code to change the directory to whatever directory you dumped the files to: 
 
         #Primary directory for project files(change this value if moving directories must use forward slashes "/" 
         #for windows machines)

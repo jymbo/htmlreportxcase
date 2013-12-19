@@ -9,7 +9,8 @@
  # Revisions:                                                                   #
  #******************************************************************************#
 
-#Primary directory for project files(change this value if moving directories must use forward slashes "/" for windows machines)
+#Primary directory for project files(change this value if moving directories must use forward slashes "/" 
+#for windows machines)
 set primarydirectory "C:/Users/Public/Documents/XCASE/"
 set parentdirectory "" 
 

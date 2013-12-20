@@ -1,0 +1,118 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XCASE", "XCASE", "{6B37DF1F-B04F-482E-9152-9A846F013C0E}"
+	ProjectSection(SolutionItems) = preProject
+		XCASE\default.html = XCASE\default.html
+		XCASE\default.tcl = XCASE\default.tcl
+		XCASE\default_include.tcl = XCASE\default_include.tcl
+		XCASE\domain.html = XCASE\domain.html
+		XCASE\domain.tcl = XCASE\domain.tcl
+		XCASE\domain_include.tcl = XCASE\domain_include.tcl
+		XCASE\function.html = XCASE\function.html
+		XCASE\function.tcl = XCASE\function.tcl
+		XCASE\function_include.tcl = XCASE\function_include.tcl
+		XCASE\HTMLReport.tcl = XCASE\HTMLReport.tcl
+		XCASE\HTMLReport.txt = XCASE\HTMLReport.txt
+		XCASE\index.htm = XCASE\index.htm
+		XCASE\procedure.html = XCASE\procedure.html
+		XCASE\procedure.tcl = XCASE\procedure.tcl
+		XCASE\procedure_include.tcl = XCASE\procedure_include.tcl
+		XCASE\rule.html = XCASE\rule.html
+		XCASE\rule.tcl = XCASE\rule.tcl
+		XCASE\rule_include.tcl = XCASE\rule_include.tcl
+		XCASE\table.html = XCASE\table.html
+		XCASE\table.tcl = XCASE\table.tcl
+		XCASE\table_include.tcl = XCASE\table_include.tcl
+		XCASE\theme.css = XCASE\theme.css
+		XCASE\title.css = XCASE\title.css
+		XCASE\title.htm = XCASE\title.htm
+		XCASE\title.tcl = XCASE\title.tcl
+		XCASE\title_include.tcl = XCASE\title_include.tcl
+		XCASE\top.htm = XCASE\top.htm
+		XCASE\tree.htm = XCASE\tree.htm
+		XCASE\TreeNodes.js = XCASE\TreeNodes.js
+		XCASE\treeview.css = XCASE\treeview.css
+		XCASE\treeview.tcl = XCASE\treeview.tcl
+		XCASE\view.html = XCASE\view.html
+		XCASE\view_include.tcl = XCASE\view_include.tcl
+		XCASE\views.tcl = XCASE\views.tcl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ADC486C3-7229-403F-9E9A-52B7A3A42EFD}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{CB5C34DC-C9EC-4BA8-8621-10E0B8B94C2F}"
+	ProjectSection(SolutionItems) = preProject
+		XCASE\Support\ftiens4.js = XCASE\Support\ftiens4.js
+		XCASE\Support\ftv2blank.gif = XCASE\Support\ftv2blank.gif
+		XCASE\Support\ftv2doc.gif = XCASE\Support\ftv2doc.gif
+		XCASE\Support\ftv2lastnode.gif = XCASE\Support\ftv2lastnode.gif
+		XCASE\Support\ftv2link.gif = XCASE\Support\ftv2link.gif
+		XCASE\Support\ftv2mlastnode.gif = XCASE\Support\ftv2mlastnode.gif
+		XCASE\Support\ftv2mnode.gif = XCASE\Support\ftv2mnode.gif
+		XCASE\Support\ftv2node.gif = XCASE\Support\ftv2node.gif
+		XCASE\Support\ftv2plastnode.gif = XCASE\Support\ftv2plastnode.gif
+		XCASE\Support\ftv2pnode.gif = XCASE\Support\ftv2pnode.gif
+		XCASE\Support\ftv2vertline.gif = XCASE\Support\ftv2vertline.gif
+		XCASE\Support\ua.js = XCASE\Support\ua.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GIf", "GIf", "{5E55D49E-0D9A-4128-A468-00D37B1B28DE}"
+	ProjectSection(SolutionItems) = preProject
+		XCASE\Support\Gif\background.jpg = XCASE\Support\Gif\background.jpg
+		XCASE\Support\Gif\blueclsd.gif = XCASE\Support\Gif\blueclsd.gif
+		XCASE\Support\Gif\bluefldr.gif = XCASE\Support\Gif\bluefldr.gif
+		XCASE\Support\Gif\default.png = XCASE\Support\Gif\default.png
+		XCASE\Support\Gif\dimensionalmodel.gif = XCASE\Support\Gif\dimensionalmodel.gif
+		XCASE\Support\Gif\domain.png = XCASE\Support\Gif\domain.png
+		XCASE\Support\Gif\func.gif = XCASE\Support\Gif\func.gif
+		XCASE\Support\Gif\iconHome.gif = XCASE\Support\Gif\iconHome.gif
+		XCASE\Support\Gif\logical.gif = XCASE\Support\Gif\logical.gif
+		XCASE\Support\Gif\physical.gif = XCASE\Support\Gif\physical.gif
+		XCASE\Support\Gif\rule.png = XCASE\Support\Gif\rule.png
+		XCASE\Support\Gif\schema.gif = XCASE\Support\Gif\schema.gif
+		XCASE\Support\Gif\sub_th.png = XCASE\Support\Gif\sub_th.png
+		XCASE\Support\Gif\table.png = XCASE\Support\Gif\table.png
+		XCASE\Support\Gif\td_bk.png = XCASE\Support\Gif\td_bk.png
+		XCASE\Support\Gif\th_bk.png = XCASE\Support\Gif\th_bk.png
+		XCASE\Support\Gif\view.png = XCASE\Support\Gif\view.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{DA100A4A-7AF6-4426-9B63-0E26113D6ED3}"
+	ProjectSection(SolutionItems) = preProject
+		XCASE\Documentation\customscriptsscreen.png = XCASE\Documentation\customscriptsscreen.png
+		XCASE\Documentation\diagramview.png = XCASE\Documentation\diagramview.png
+		XCASE\Documentation\tableview.png = XCASE\Documentation\tableview.png
+		XCASE\Documentation\tclselectview.png = XCASE\Documentation\tclselectview.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "diagrams", "diagrams", "{13FF7BCC-99AA-424D-B0DC-FC09B604A693}"
+	ProjectSection(SolutionItems) = preProject
+		XCASE\diagrams\AdventureWorks.jpg = XCASE\diagrams\AdventureWorks.jpg
+		XCASE\diagrams\dbo.jpg = XCASE\diagrams\dbo.jpg
+		XCASE\diagrams\HumanResources.jpg = XCASE\diagrams\HumanResources.jpg
+		XCASE\diagrams\Person.jpg = XCASE\diagrams\Person.jpg
+		XCASE\diagrams\Production.jpg = XCASE\diagrams\Production.jpg
+		XCASE\diagrams\Purchasing.jpg = XCASE\diagrams\Purchasing.jpg
+		XCASE\diagrams\Sales.jpg = XCASE\diagrams\Sales.jpg
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CB5C34DC-C9EC-4BA8-8621-10E0B8B94C2F} = {6B37DF1F-B04F-482E-9152-9A846F013C0E}
+		{DA100A4A-7AF6-4426-9B63-0E26113D6ED3} = {6B37DF1F-B04F-482E-9152-9A846F013C0E}
+		{13FF7BCC-99AA-424D-B0DC-FC09B604A693} = {6B37DF1F-B04F-482E-9152-9A846F013C0E}
+		{5E55D49E-0D9A-4128-A468-00D37B1B28DE} = {CB5C34DC-C9EC-4BA8-8621-10E0B8B94C2F}
+	EndGlobalSection
+EndGlobal

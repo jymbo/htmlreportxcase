@@ -210,7 +210,7 @@ puts $outfile "DD_1E  = insFld(DD_1, gFld('Diagrams',''))"
 puts $outfile "DD_1E.iconSrc = ICONPATH + 'Gif/bluefldr.gif'"
 puts $outfile "DD_1E.iconSrcClosed = ICONPATH +'Gif/blueclsd.gif'"  
     foreach file $contents {
-		puts $outfile "DomainSection_$de_integer = insFld(DD_1E, gFld('[file rootname $file]','$::diagramfull$file'))"
+		puts $outfile "DomainSection_$de_integer = insFld(DD_1E, gFld('[file rootname $file]','$::diagramdir$file'))"
 		puts $outfile "DomainSection_$de_integer.iconSrc = ICONPATH + 'Gif/schema.gif'"
 		puts $outfile "DomainSection_$de_integer.iconSrcClosed = ICONPATH +'Gif/schema.gif'"
       }

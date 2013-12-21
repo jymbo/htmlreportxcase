@@ -25,7 +25,65 @@ set sorted [lsort -ascii -index 1  $postlist]
 set finallist {}
 foreach var $sorted {
 	lappend finallist [lindex $var 0] 	
-}
+} 
+
+#Get list of tables
+set table_list [dict list_of_tables]
+
+#Create list of table id's and table names 
+set tablepostlist {} 
+
+#Get list of domains
+set domain_list [dict list_of_domains]
+
+#Populate list of table id's and table names                       
+foreach table $table_list {
+	set table_name  [$table attr NAME]
+	lappend tablepostlist [list "$table" "$table_name"] 
+} 
+#Sort the list by the table name
+set sorted [lsort -ascii -index 1  $tablepostlist] 
+
+#Get final list of just table names
+set tablefinallist {}
+	foreach var $sorted {
+	lappend tablefinallist [lindex $var 0] 	
+} 
+
+#Create list of domain id, table name and field name
+set domain_field_list {}
+
+foreach table $tablefinallist {
+#Table fields
+	set field_list [$table list_of_fields] 
+ 
+#Create list of field id's and field names 
+set fieldpostlist {} 
+
+#Populate list of table id's and table names                       
+	foreach field $field_list {
+		set field_name  [$field attr NAME]
+		lappend fieldpostlist [list "$field" "$field_name"] 
+		} 
+#Sort the list by the field name
+		set sorted [lsort -ascii -index 1  $fieldpostlist] 
+
+#Get final list of just field id's
+		set fieldfinallist {}
+		foreach var $sorted {
+			lappend fieldfinallist [lindex $var 0] 	
+		}
+
+		foreach field $fieldfinallist {   
+	
+#Append to domain_field_list if field is associated with a domain
+			if { [lsearch -exact $domain_list "dom[$field attr I_DOMAIN]"]} {
+				lappend domain_field_list [list "dom[$field attr I_DOMAIN]" "[$table attr NAME]" "[$field attr NAME]"]		
+		}
+   
+	} 
+}  
+
 
 #Truncate existing file(This global variable is set in HTMLReport.tcl)
 close [open $::domainfull "w" ]
@@ -37,19 +95,7 @@ set outfile [open $::domainfull "a" ]
 source  $::domainincludefull
 
 #Prints out the HTML for domain.html
-printdomains $finallist $outfile   
+printdomains $finallist $domain_field_list $outfile   
 
 #Release file handle
 close $outfile   
-
- 
-  
-
-
-
- 
-
- 
-
-
- 

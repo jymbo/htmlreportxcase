@@ -8,8 +8,22 @@
  #******************************************************************************#
 
 
+#Prints out table name and field name dependents of the domain
+proc printdomainfielddependents { item_list domain outfile } {  
+
+	if { [lindex $item_list 0] == $domain } {
+		 puts $outfile "<tr>"  
+		 puts -nonewline $outfile "<td><a href=\"$::tablehtml"
+	     puts -nonewline $outfile "#[lindex $item_list 1]\">[lindex $item_list 1]</a></td>"
+	     puts $outfile "<td>[lindex $item_list 2]</td>"  
+		 puts $outfile "</tr>"	
+	} 
+
+}    
+
+
 #Prints out domains
-proc printdomains { finallist outfile } {
+proc printdomains { finallist domain_field_list outfile } {
 	puts $outfile "<html>"
 	puts $outfile "<head>" 
 	puts $outfile "<link rel=\"stylesheet\" type=\"text/css\" href=\"theme.css\">"
@@ -25,7 +39,7 @@ proc printdomains { finallist outfile } {
         puts $outfile "<td colspan=\"5\">[$domain attr OWNER]</td>"  
 		puts $outfile "</tr>"
 		puts $outfile "<tr>"
-		puts $outfile "<th >Type</th>"
+		puts $outfile "<th>Type</th>"
 		puts $outfile "<th>Length</th>"
 	    puts $outfile "<th>Decimal</th>"
 	    puts $outfile "<th>Default Name</th>"
@@ -38,11 +52,9 @@ proc printdomains { finallist outfile } {
 		puts $outfile "<td>[$domain attr DEC]</td>"
 	    puts $outfile "<td>" 
 #Prints out default name if exists
-		if { [$domain default] != ""} { 
-	    puts $outfile "<a href=\"$::defaulthtml\""
-				puts -nonewline $outfile "#"
-				puts -nonewline $outfile "[[$domain default] attr NAME]\">"
-				puts $outfile "[[$domain default] attr NAME]</a></td>" 
+		if { [$domain default] != "" } { 
+	    puts $outfile "<a href=\"$::defaulthtml"
+		puts $outfile "#[[$domain default] attr NAME]\">[[$domain default] attr NAME]</a></td>" 
 		puts $outfile "<td>[[$domain default] attr CODE]</td>" 
 	 	} else { 
 	        puts $outfile "</td><td>"
@@ -63,10 +75,24 @@ proc printdomains { finallist outfile } {
 		puts $outfile "<td colspan=\"6\">[$domain attr COMMENTS]</td>" 
 		puts $outfile "</tr>" 
 #End of domain table
+		puts $outfile "</table>" 
+#Start table for table dependencies
+		puts $outfile "<table border=\"1\">" 
+		puts $outfile "<tr>"   
+		puts $outfile "<th colspan=\"2\"><div id=title-bar><strong>Table Dependencies</strong></div></th>"
+		puts $outfile "</tr>" 
+    	puts $outfile "<tr>"   
+		puts $outfile "<th><strong>Table</strong></th>"
+		puts $outfile "<th><strong>Field</strong></th>"
+		puts $outfile "</tr>" 
+		foreach item $domain_field_list { 
+#Prints out domain dependents
+       		 printdomainfielddependents $item $domain $outfile  
+			}   
+#End of domain table dependencies table
 		puts $outfile "</table>"
 		puts $outfile "&nbsp;"
 	 }
 
 	puts $outfile "</html>"  
-}
-
+}  

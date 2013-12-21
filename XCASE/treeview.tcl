@@ -147,8 +147,8 @@ if { [llength $sorted_procedure_list] >0} {
 	puts $outfile "DD_1C.iconSrcClosed = ICONPATH +'Gif/blueclsd.gif'"                    
 	foreach procedure $sorted_procedure_list {
 		puts $outfile "DomainSection_$tr_integer = insFld(DD_1C, gFld('$procedure','$::procedurehtml#$procedure'))"
-		puts $outfile "DomainSection_$tr_integer.iconSrc = ICONPATH + 'Gif/logical.gif'"
-		puts $outfile "DomainSection_$tr_integer.iconSrcClosed = ICONPATH +'Gif/logical.gif'"
+		puts $outfile "DomainSection_$tr_integer.iconSrc = ICONPATH + 'Gif/proc.png'"
+		puts $outfile "DomainSection_$tr_integer.iconSrcClosed = ICONPATH +'Gif/proc.png'"
 		incr tr_integer  
 	}  
 }
@@ -159,8 +159,8 @@ if { [llength $sorted_function_list] >0} {
 	puts $outfile "DD_1D.iconSrcClosed = ICONPATH +'Gif/blueclsd.gif'" 
 	foreach function $sorted_function_list {
 		puts $outfile "DomainSection_$f_integer = insFld(DD_1D, gFld('$function','$::functionhtml#$function'))"
-		puts $outfile "DomainSection_$f_integer.iconSrc = ICONPATH + 'Gif/func.gif'"
-		puts $outfile "DomainSection_$f_integer.iconSrcClosed = ICONPATH +'Gif/func.gif'"
+		puts $outfile "DomainSection_$f_integer.iconSrc = ICONPATH + 'Gif/fx.png'"
+		puts $outfile "DomainSection_$f_integer.iconSrcClosed = ICONPATH +'Gif/fx.png'"
 		incr f_integer  
 	} 
 }

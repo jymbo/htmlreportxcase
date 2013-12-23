@@ -42,47 +42,48 @@ foreach table $table_list {
 	lappend tablepostlist [list "$table" "$table_name"] 
 } 
 #Sort the list by the table name
-set sorted [lsort -ascii -index 1  $tablepostlist] 
+set tablesorted [lsort -ascii -index 1  $tablepostlist] 
 
 #Get final list of just table names
 set tablefinallist {}
-	foreach var $sorted {
+	foreach var $tablesorted {
 	lappend tablefinallist [lindex $var 0] 	
-} 
+}
 
-#Create list of domain id, table name and field name
 set domain_field_list {}
 
-foreach table $tablefinallist {
+	foreach table $tablefinallist {
 #Table fields
-	set field_list [$table list_of_fields] 
+		set field_list [$table list_of_fields] 
  
 #Create list of field id's and field names 
 set fieldpostlist {} 
 
 #Populate list of table id's and table names                       
-	foreach field $field_list {
-		set field_name  [$field attr NAME]
-		lappend fieldpostlist [list "$field" "$field_name"] 
-		} 
+foreach field $field_list {
+	set field_name  [$field attr NAME]
+	lappend fieldpostlist [list "$field" "$field_name"] 
+} 
 #Sort the list by the field name
-		set sorted [lsort -ascii -index 1  $fieldpostlist] 
+set fieldsorted [lsort -ascii -index 1  $fieldpostlist] 
 
 #Get final list of just field id's
-		set fieldfinallist {}
-		foreach var $sorted {
-			lappend fieldfinallist [lindex $var 0] 	
-		}
+set fieldfinallist {}
+	foreach var $fieldsorted {
+	lappend fieldfinallist [lindex $var 0] 	
+}
 
-		foreach field $fieldfinallist {   
+	foreach field $fieldfinallist {   
 	
 #Append to domain_field_list if field is associated with a domain
-			if { [lsearch -exact $domain_list "dom[$field attr I_DOMAIN]"]} {
-				lappend domain_field_list [list "dom[$field attr I_DOMAIN]" "[$table attr NAME]" "[$field attr NAME]"]		
+		if { [lsearch -exact $domain_list "dom[$field attr I_DOMAIN]"] >= 0 } {
+			lappend domain_field_list [list "dom[$field attr I_DOMAIN]" "[$table attr NAME]" "[$field attr NAME]"]
+		
 		}
    
 	} 
 }  
+
 
 
 #Truncate existing file(This global variable is set in HTMLReport.tcl)
@@ -99,3 +100,15 @@ printdomains $finallist $domain_field_list $outfile
 
 #Release file handle
 close $outfile   
+
+ 
+  
+
+
+
+ 
+
+ 
+
+
+ 

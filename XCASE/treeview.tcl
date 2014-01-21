@@ -40,6 +40,10 @@ set pre_rule_list " "
 #List of default names  
 set pre_default_list " " 
 
+#Define sorted procedure list
+set sorted_procedure_list " "
+
+
 #List of table identifiers
 set table_list [dict list_of_tables] 
 #List of view identifiers

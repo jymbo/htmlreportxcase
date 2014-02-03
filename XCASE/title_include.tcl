@@ -35,7 +35,7 @@ proc printtitle { model outfile } {
 		puts $outfile "<BR/><BR/>"
 		
 		puts $outfile "<strong>Updated</strong>:"  
-		puts $outfile [clock format [clock seconds]]
+		puts $outfile [get_time]
 
 	}
 	puts $outfile "</TD>"    

@@ -108,6 +108,7 @@ proc printfields { field_list  domain_list outfile } {
     puts $outfile "<th>Default Value</th>"
 	puts $outfile "<th><strong>Rule</strong></th>"
 	puts $outfile "<th><strong>Description</strong></th>"   
+	puts $outfile "<th><strong>Comments</strong></th>" 
 	puts $outfile "</tr>"
 #Print out field rows
 	foreach field $field_list {   
@@ -151,7 +152,8 @@ proc printfields { field_list  domain_list outfile } {
 		}  
 
 		puts $outfile "</td>"  
-		puts $outfile "<td>[$field attr DESCRIPT]</td>" 
+		puts $outfile "<td>[$field attr DESCRIPT]</td>"  
+        puts $outfile "<td>[$field attr COMMENTS]</td>"
 		puts $outfile " </tr>"
 	}
 #End table/field table  
@@ -365,22 +367,22 @@ proc printtables { finallist domain_list outfile } {
 #Print table metadata to the output file
 	puts $outfile "<table border=\"1\">" 
 	puts $outfile "<tr>"   
-	puts $outfile "<th colspan=\"11\" id=[$table attr NAME]><div id=\"table-bar\"><strong>[$table attr NAME]</strong></div></th>"
+	puts $outfile "<th colspan=\"12\" id=[$table attr NAME]><div id=\"table-bar\"><strong>[$table attr NAME]</strong></div></th>"
 	puts $outfile "</tr>"
 	puts $outfile "<tr>"  
 	puts $outfile "<th colspan=\"1\">Owner</th>"
-    puts $outfile "<td colspan=\"10\">[$table attr OWNER]</td>" 
+    puts $outfile "<td colspan=\"11\">[$table attr OWNER]</td>" 
 	puts $outfile "</tr>"
 	puts $outfile "<tr>"  
-	puts $outfile "<th colspan=\"11\">Description</th>"  
+	puts $outfile "<th colspan=\"12\">Description</th>"  
 	puts $outfile "<tr>"  
-	puts $outfile "<td colspan=\"11\" >[$table attr DESCRIPT]</td>"
+	puts $outfile "<td colspan=\"12\" >[$table attr DESCRIPT]</td>"
 	puts $outfile "</tr>"  
 	puts $outfile "<tr>"  
-	puts $outfile "<th colspan=\"11\">Comments</th>"
+	puts $outfile "<th colspan=\"12\">Comments</th>"
 	puts $outfile "</tr>" 
 	puts $outfile "<tr>"  
-	puts $outfile "<td colspan=\"11\">[$table attr COMMENTS]</td>"
+	puts $outfile "<td colspan=\"12\">[$table attr COMMENTS]</td>"
 	puts $outfile "</tr>"  
 	
 #Print field rows to the output file

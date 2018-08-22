@@ -6,11 +6,11 @@ HTML Report Export for the XCASE Modeling Tool
   
   The website contains 3 frames, a top frame, a title frame and a tree view for the model objects:
   
-  ![alt tag] (https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/tableview.png)
+  ![Image 1](https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/tableview.png)
   
   The tree view allows you to click on folder nodes for the model tables, views, procedures, functions, etc. and view their metadata. There is also a directory that you can dump your exported model images to and have them show up automatically in nodes under the diagrams folder node after running the scripts:
   
-  ![alt tag] (https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/diagramview.png)
+  ![Image 2](https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/diagramview.png)
   
 **Installing**
 
@@ -22,12 +22,12 @@ HTML Report Export for the XCASE Modeling Tool
 
 2. In the ©XCASE database modeling tool go to the Code --> Custom Scripts and Reports menu. Once on this menu click the New button and give your HTML report export job a name:
 
-  ![alt tag] (https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/customscriptsscreen.png)
+  ![Image 3](https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/customscriptsscreen.png)
   
 
 3. In Template File text box, browse to the directory where you dumped the files and select HTMLReport.tcl. In the Output File text box browse to the same directory and select HTMLReport.txt. Then click the Run button. After the job finished running you should see a popup box stating "The generated script is empty":
 
-  ![alt tag] (https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/tclselectview.png)
+  ![Image 4](https://raw.github.com/jymbo/htmlreportxcase/master/XCASE/Documentation/tclselectview.png)
   
 You should now be able to open index.htm and see your model's metadata in your web browser.
 
